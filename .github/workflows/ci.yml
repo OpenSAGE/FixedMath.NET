@@ -25,8 +25,10 @@ jobs:
       run: dotnet build src --configuration Release
 
     - name: Test
-      run: dotnet test src --configuration Release
+      run: dotnet test src --configuration Release --collect:"XPlat Code Coverage"
 
+    - name: Upload coverage
+      uses: codecov/codecov-action@v1
   # publish:
   #   needs: build
 
