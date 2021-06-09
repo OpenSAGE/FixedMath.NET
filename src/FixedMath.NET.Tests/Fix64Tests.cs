@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Xunit;
 
-namespace FixMath.NET
+namespace FixedMath.NET.Tests
 {
     public class Fix64Tests
     {
@@ -740,32 +740,33 @@ namespace FixMath.NET
             Console.WriteLine("Max error: {0} ({1} times precision)", deltas.Max(), deltas.Max() / Fix64.Precision);
             Console.WriteLine("Average precision: {0} ({1} times precision)", deltas.Average(), deltas.Average() / Fix64.Precision);
         }
-        //[Fact]
-        public void AtanBenchmark()
-        {
-            var deltas = new List<decimal>();
 
-            var swf = new Stopwatch();
-            var swd = new Stopwatch();
+        // [Fact]
+        // public void AtanBenchmark()
+        // {
+        //   var deltas = new List<decimal>();
 
-            for (var x = -1.0; x < 1.0; x += 0.001)
-            {
-                for (int k = 0; k < 1000; ++k)
-                {
-                    var xf = (Fix64)x;
-                    swf.Start();
-                    var actualF = Fix64.Atan(xf);
-                    swf.Stop();
-                    swd.Start();
-                    var expected = Math.Atan((double)xf);
-                    swd.Stop();
-                    deltas.Add(Math.Abs((decimal)actualF - (decimal)expected));
-                }
-            }
-            Console.WriteLine("Max error: {0} ({1} times precision)", deltas.Max(), deltas.Max() / Fix64.Precision);
-            Console.WriteLine("Average precision: {0} ({1} times precision)", deltas.Average(), deltas.Average() / Fix64.Precision);
-            Console.WriteLine("Fix64.Atan time = {0}ms, Math.Atan time = {1}ms", swf.ElapsedMilliseconds, swd.ElapsedMilliseconds);
-        }
+        //   var swf = new Stopwatch();
+        //   var swd = new Stopwatch();
+
+        //   for (var x = -1.0; x < 1.0; x += 0.001)
+        //   {
+        //     for (int k = 0; k < 1000; ++k)
+        //     {
+        //       var xf = (Fix64)x;
+        //       swf.Start();
+        //       var actualF = Fix64.Atan(xf);
+        //       swf.Stop();
+        //       swd.Start();
+        //       var expected = Math.Atan((double)xf);
+        //       swd.Stop();
+        //       deltas.Add(Math.Abs((decimal)actualF - (decimal)expected));
+        //     }
+        //   }
+        //   Console.WriteLine("Max error: {0} ({1} times precision)", deltas.Max(), deltas.Max() / Fix64.Precision);
+        //   Console.WriteLine("Average precision: {0} ({1} times precision)", deltas.Average(), deltas.Average() / Fix64.Precision);
+        //   Console.WriteLine("Fix64.Atan time = {0}ms, Math.Atan time = {1}ms", swf.ElapsedMilliseconds, swd.ElapsedMilliseconds);
+        // }
 
         [Fact]
         public void Atan2()
@@ -813,35 +814,35 @@ namespace FixMath.NET
 
 
         //[Fact]
-        public void Atan2Benchmark()
-        {
-            var deltas = new List<decimal>();
+        // public void Atan2Benchmark()
+        // {
+        //   var deltas = new List<decimal>();
 
-            var swf = new Stopwatch();
-            var swd = new Stopwatch();
+        //   var swf = new Stopwatch();
+        //   var swd = new Stopwatch();
 
-            foreach (var y in m_testCases)
-            {
-                foreach (var x in m_testCases)
-                {
-                    for (int k = 0; k < 1000; ++k)
-                    {
-                        var yf = (Fix64)y;
-                        var xf = (Fix64)x;
-                        swf.Start();
-                        var actualF = Fix64.Atan2(yf, xf);
-                        swf.Stop();
-                        swd.Start();
-                        var expected = Math.Atan2((double)yf, (double)xf);
-                        swd.Stop();
-                        deltas.Add(Math.Abs((decimal)actualF - (decimal)expected));
-                    }
-                }
-            }
-            Console.WriteLine("Max error: {0} ({1} times precision)", deltas.Max(), deltas.Max() / Fix64.Precision);
-            Console.WriteLine("Average precision: {0} ({1} times precision)", deltas.Average(), deltas.Average() / Fix64.Precision);
-            Console.WriteLine("Fix64.Atan2 time = {0}ms, Math.Atan2 time = {1}ms", swf.ElapsedMilliseconds, swd.ElapsedMilliseconds);
-        }
+        //   foreach (var y in m_testCases)
+        //   {
+        //     foreach (var x in m_testCases)
+        //     {
+        //       for (int k = 0; k < 1000; ++k)
+        //       {
+        //         var yf = (Fix64)y;
+        //         var xf = (Fix64)x;
+        //         swf.Start();
+        //         var actualF = Fix64.Atan2(yf, xf);
+        //         swf.Stop();
+        //         swd.Start();
+        //         var expected = Math.Atan2((double)yf, (double)xf);
+        //         swd.Stop();
+        //         deltas.Add(Math.Abs((decimal)actualF - (decimal)expected));
+        //       }
+        //     }
+        //   }
+        //   Console.WriteLine("Max error: {0} ({1} times precision)", deltas.Max(), deltas.Max() / Fix64.Precision);
+        //   Console.WriteLine("Average precision: {0} ({1} times precision)", deltas.Average(), deltas.Average() / Fix64.Precision);
+        //   Console.WriteLine("Fix64.Atan2 time = {0}ms, Math.Atan2 time = {1}ms", swf.ElapsedMilliseconds, swd.ElapsedMilliseconds);
+        // }
 
         [Fact]
         public void Negation()
