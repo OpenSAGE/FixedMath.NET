@@ -3,6 +3,7 @@
 ## Changes
 
 - Use SourceGenerators to create LUTs
+- Change target framework to .NET Standard 2.0
 
 ## Original Text
 
