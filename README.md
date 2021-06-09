@@ -1,6 +1,7 @@
 # FixedMath.NET
 
 [![CI](https://github.com/OpenSAGE/FixedMath.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenSAGE/FixedMath.NET/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/OpenSAGE/FixedMath.NET/branch/master/graph/badge.svg?token=LZO8MJT5HA)](https://codecov.io/gh/OpenSAGE/FixedMath.NET)
 ![Nuget](https://img.shields.io/nuget/v/fixedmath.net)
 
 ## Changes
