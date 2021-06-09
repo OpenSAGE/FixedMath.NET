@@ -1,5 +1,8 @@
 # FixedMath.NET
 
+[![CI](https://github.com/OpenSAGE/FixedMath.NET/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenSAGE/FixedMath.NET/actions/workflows/ci.yml)
+![Nuget](https://img.shields.io/nuget/v/fixedmath.net)
+
 ## Changes
 
 - Use SourceGenerators to create LUTs
