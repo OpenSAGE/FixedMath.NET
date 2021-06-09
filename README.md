@@ -1,6 +1,8 @@
-# FixMath.NET
+# FixedMath.NET
 
+## Changes
 
+- Use SourceGenerators to create LUTs
 
 ## Original Text
 
