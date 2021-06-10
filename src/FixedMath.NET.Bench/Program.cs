@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 
@@ -44,8 +45,17 @@ namespace FixedMath.NET.Bench
         var actualF = Fix64.Atan(angle);
       }
     }
+
+    [Benchmark]
+    public void Atan2()
+    {
+      foreach (var angle in atanAngles)
+      {
+        var actualF = Fix64.Atan2(angle, angle);
+      }
+    }
   }
-  
+
   class Program
   {
     static void Main(string[] args)
