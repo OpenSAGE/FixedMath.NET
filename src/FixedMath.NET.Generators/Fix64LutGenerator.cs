@@ -13,7 +13,7 @@ namespace FixedMath.NET.Generators
   {
     private void BuildSinLut(GeneratorExecutionContext context)
     {
-      var sourceBuilder = new StringBuilder(@"namespace FixedMath.NET 
+      var sourceBuilder = new StringBuilder(@"namespace FixedMath 
 {
     partial struct Fix64 
     {
@@ -21,16 +21,16 @@ namespace FixedMath.NET.Generators
         {");
 
       int lineCounter = 0;
-      for (int i = 0; i < Constants.LUT_SIZE; ++i)
+      for (int i = 0; i < Fix64Constants.LUT_SIZE; ++i)
       {
-        var angle = i * Math.PI * 0.5 / (Constants.LUT_SIZE - 1);
+        var angle = i * Math.PI * 0.5 / (Fix64Constants.LUT_SIZE - 1);
         if (lineCounter++ % 8 == 0)
         {
           sourceBuilder.AppendLine();
           sourceBuilder.Append("            ");
         }
         var sin = Math.Sin(angle);
-        var rawValue = (long)(sin * Constants.ONE);
+        var rawValue = (long)(sin * Fix64Constants.ONE);
         sourceBuilder.Append(string.Format("0x{0:X}L, ", rawValue));
       }
       sourceBuilder.Append(
@@ -45,7 +45,7 @@ namespace FixedMath.NET.Generators
 
     private void BuildTanLut(GeneratorExecutionContext context)
     {
-      var sourceBuilder = new StringBuilder(@"namespace FixedMath.NET 
+      var sourceBuilder = new StringBuilder(@"namespace FixedMath 
 {
     partial struct Fix64 
     {
@@ -53,20 +53,20 @@ namespace FixedMath.NET.Generators
         {");
 
       int lineCounter = 0;
-      for (int i = 0; i < Constants.LUT_SIZE; ++i)
+      for (int i = 0; i < Fix64Constants.LUT_SIZE; ++i)
       {
-        var angle = i * Math.PI * 0.5 / (Constants.LUT_SIZE - 1);
+        var angle = i * Math.PI * 0.5 / (Fix64Constants.LUT_SIZE - 1);
         if (lineCounter++ % 8 == 0)
         {
           sourceBuilder.AppendLine();
           sourceBuilder.Append("            ");
         }
         var tan = Math.Tan(angle);
-        if (tan > (double)Constants.MAX_VALUE || tan < 0.0)
+        if (tan > (double)Fix64Constants.MAX_VALUE || tan < 0.0)
         {
-          tan = (double)Constants.MAX_VALUE;
+          tan = (double)Fix64Constants.MAX_VALUE;
         }
-        var rawValue = (((decimal)tan > (decimal)Constants.MAX_VALUE || tan < 0.0) ? Constants.MAX_VALUE : (long)(tan * Constants.ONE));
+        var rawValue = (((decimal)tan > (decimal)Fix64Constants.MAX_VALUE || tan < 0.0) ? Fix64Constants.MAX_VALUE : (long)(tan * Fix64Constants.ONE));
         sourceBuilder.Append(string.Format("0x{0:X}L, ", rawValue));
       }
       sourceBuilder.Append(

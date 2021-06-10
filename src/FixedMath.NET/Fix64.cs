@@ -1,8 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace FixedMath.NET
+namespace FixedMath
 {
 
     /// <summary>
@@ -14,23 +13,23 @@ namespace FixedMath.NET
 
         // Precision of this type is 2^-32, that is 2,3283064365386962890625E-10
         public static readonly decimal Precision = (decimal)(new Fix64(1L));//0.00000000023283064365386962890625m;
-        public static readonly Fix64 MaxValue = new Fix64(Constants.MAX_VALUE);
-        public static readonly Fix64 MinValue = new Fix64(Constants.MIN_VALUE);
-        public static readonly Fix64 One = new Fix64(Constants.ONE);
+        public static readonly Fix64 MaxValue = new Fix64(Fix64Constants.MAX_VALUE);
+        public static readonly Fix64 MinValue = new Fix64(Fix64Constants.MIN_VALUE);
+        public static readonly Fix64 One = new Fix64(Fix64Constants.ONE);
         public static readonly Fix64 Zero = new Fix64();
         /// <summary>
         /// The value of Pi
         /// </summary>
-        public static readonly Fix64 Pi = new Fix64(Constants.PI);
-        public static readonly Fix64 PiOver2 = new Fix64(Constants.PI_OVER_2);
-        public static readonly Fix64 PiTimes2 = new Fix64(Constants.PI_TIMES_2);
+        public static readonly Fix64 Pi = new Fix64(Fix64Constants.PI);
+        public static readonly Fix64 PiOver2 = new Fix64(Fix64Constants.PI_OVER_2);
+        public static readonly Fix64 PiTimes2 = new Fix64(Fix64Constants.PI_TIMES_2);
         public static readonly Fix64 PiInv = (Fix64)0.3183098861837906715377675267M;
         public static readonly Fix64 PiOver2Inv = (Fix64)0.6366197723675813430755350535M;
-        static readonly Fix64 Log2Max = new Fix64(Constants.LOG2MAX);
-        static readonly Fix64 Log2Min = new Fix64(Constants.LOG2MIN);
-        static readonly Fix64 Ln2 = new Fix64(Constants.LN2);
+        static readonly Fix64 Log2Max = new Fix64(Fix64Constants.LOG2MAX);
+        static readonly Fix64 Log2Min = new Fix64(Fix64Constants.LOG2MIN);
+        static readonly Fix64 Ln2 = new Fix64(Fix64Constants.LN2);
 
-        static readonly Fix64 LutInterval = (Fix64)(Constants.LUT_SIZE - 1) / PiOver2;
+        static readonly Fix64 LutInterval = (Fix64)(Fix64Constants.LUT_SIZE - 1) / PiOver2;
 
         /// <summary>
         /// Returns a number indicating the sign of a Fix64 number.
@@ -51,7 +50,7 @@ namespace FixedMath.NET
         /// </summary>
         public static Fix64 Abs(Fix64 value)
         {
-            if (value.m_rawValue == Constants.MIN_VALUE)
+            if (value.m_rawValue == Fix64Constants.MIN_VALUE)
             {
                 return MaxValue;
             }
@@ -109,7 +108,7 @@ namespace FixedMath.NET
             }
             // if number is halfway between two values, round to the nearest even number
             // this is the method used by System.Math.Round().
-            return (integralPart.m_rawValue & Constants.ONE) == 0
+            return (integralPart.m_rawValue & Fix64Constants.ONE) == 0
                        ? integralPart
                        : integralPart + One;
         }
@@ -124,9 +123,9 @@ namespace FixedMath.NET
             var yl = y.m_rawValue;
             var sum = xl + yl;
             // if signs of operands are equal and signs of sum and x are different
-            if (((~(xl ^ yl) & (xl ^ sum)) & Constants.MIN_VALUE) != 0)
+            if (((~(xl ^ yl) & (xl ^ sum)) & Fix64Constants.MIN_VALUE) != 0)
             {
-                sum = xl > 0 ? Constants.MAX_VALUE : Constants.MIN_VALUE;
+                sum = xl > 0 ? Fix64Constants.MAX_VALUE : Fix64Constants.MIN_VALUE;
             }
             return new Fix64(sum);
         }
@@ -149,9 +148,9 @@ namespace FixedMath.NET
             var yl = y.m_rawValue;
             var diff = xl - yl;
             // if signs of operands are different and signs of sum and x are different
-            if ((((xl ^ yl) & (xl ^ diff)) & Constants.MIN_VALUE) != 0)
+            if ((((xl ^ yl) & (xl ^ diff)) & Fix64Constants.MIN_VALUE) != 0)
             {
-                diff = xl < 0 ? Constants.MIN_VALUE : Constants.MAX_VALUE;
+                diff = xl < 0 ? Fix64Constants.MIN_VALUE : Fix64Constants.MAX_VALUE;
             }
             return new Fix64(diff);
         }
@@ -168,7 +167,7 @@ namespace FixedMath.NET
         {
             var sum = x + y;
             // x + y overflows if sign(x) ^ sign(y) != sign(sum)
-            overflow |= ((x ^ y ^ sum) & Constants.MIN_VALUE) != 0;
+            overflow |= ((x ^ y ^ sum) & Fix64Constants.MIN_VALUE) != 0;
             return sum;
         }
 
@@ -179,26 +178,26 @@ namespace FixedMath.NET
             var yl = y.m_rawValue;
 
             var xlo = (ulong)(xl & 0x00000000FFFFFFFF);
-            var xhi = xl >> Constants.FRACTIONAL_PLACES;
+            var xhi = xl >> Fix64Constants.FRACTIONAL_PLACES;
             var ylo = (ulong)(yl & 0x00000000FFFFFFFF);
-            var yhi = yl >> Constants.FRACTIONAL_PLACES;
+            var yhi = yl >> Fix64Constants.FRACTIONAL_PLACES;
 
             var lolo = xlo * ylo;
             var lohi = (long)xlo * yhi;
             var hilo = xhi * (long)ylo;
             var hihi = xhi * yhi;
 
-            var loResult = lolo >> Constants.FRACTIONAL_PLACES;
+            var loResult = lolo >> Fix64Constants.FRACTIONAL_PLACES;
             var midResult1 = lohi;
             var midResult2 = hilo;
-            var hiResult = hihi << Constants.FRACTIONAL_PLACES;
+            var hiResult = hihi << Fix64Constants.FRACTIONAL_PLACES;
 
             bool overflow = false;
             var sum = AddOverflowHelper((long)loResult, midResult1, ref overflow);
             sum = AddOverflowHelper(sum, midResult2, ref overflow);
             sum = AddOverflowHelper(sum, hiResult, ref overflow);
 
-            bool opSignsEqual = ((xl ^ yl) & Constants.MIN_VALUE) == 0;
+            bool opSignsEqual = ((xl ^ yl) & Fix64Constants.MIN_VALUE) == 0;
 
             // if signs of operands are equal and sign of result is negative,
             // then multiplication overflowed positively
@@ -220,7 +219,7 @@ namespace FixedMath.NET
 
             // if the top 32 bits of hihi (unused in the result) are neither all 0s or 1s,
             // then this means the result overflowed.
-            var topCarry = hihi >> Constants.FRACTIONAL_PLACES;
+            var topCarry = hihi >> Fix64Constants.FRACTIONAL_PLACES;
             if (topCarry != 0 && topCarry != -1 /*&& xl != -17 && yl != -17*/)
             {
                 return opSignsEqual ? MaxValue : MinValue;
@@ -241,7 +240,7 @@ namespace FixedMath.NET
                     posOp = yl;
                     negOp = xl;
                 }
-                if (sum > negOp && negOp < -Constants.ONE && posOp > Constants.ONE)
+                if (sum > negOp && negOp < -Fix64Constants.ONE && posOp > Fix64Constants.ONE)
                 {
                     return MinValue;
                 }
@@ -261,19 +260,19 @@ namespace FixedMath.NET
             var yl = y.m_rawValue;
 
             var xlo = (ulong)(xl & 0x00000000FFFFFFFF);
-            var xhi = xl >> Constants.FRACTIONAL_PLACES;
+            var xhi = xl >> Fix64Constants.FRACTIONAL_PLACES;
             var ylo = (ulong)(yl & 0x00000000FFFFFFFF);
-            var yhi = yl >> Constants.FRACTIONAL_PLACES;
+            var yhi = yl >> Fix64Constants.FRACTIONAL_PLACES;
 
             var lolo = xlo * ylo;
             var lohi = (long)xlo * yhi;
             var hilo = xhi * (long)ylo;
             var hihi = xhi * yhi;
 
-            var loResult = lolo >> Constants.FRACTIONAL_PLACES;
+            var loResult = lolo >> Fix64Constants.FRACTIONAL_PLACES;
             var midResult1 = lohi;
             var midResult2 = hilo;
-            var hiResult = hihi << Constants.FRACTIONAL_PLACES;
+            var hiResult = hihi << Fix64Constants.FRACTIONAL_PLACES;
 
             var sum = (long)loResult + midResult1 + midResult2 + hiResult;
             return new Fix64(sum);
@@ -301,7 +300,7 @@ namespace FixedMath.NET
             var remainder = (ulong)(xl >= 0 ? xl : -xl);
             var divider = (ulong)(yl >= 0 ? yl : -yl);
             var quotient = 0UL;
-            var bitPos = Constants.NUM_BITS / 2 + 1;
+            var bitPos = Fix64Constants.NUM_BITS / 2 + 1;
 
 
             // If the divider is divisible by 2^n, take advantage of it.
@@ -328,7 +327,7 @@ namespace FixedMath.NET
                 // Detect overflow
                 if ((div & ~(0xFFFFFFFFFFFFFFFF >> bitPos)) != 0)
                 {
-                    return ((xl ^ yl) & Constants.MIN_VALUE) == 0 ? MaxValue : MinValue;
+                    return ((xl ^ yl) & Fix64Constants.MIN_VALUE) == 0 ? MaxValue : MinValue;
                 }
 
                 remainder <<= 1;
@@ -338,7 +337,7 @@ namespace FixedMath.NET
             // rounding
             ++quotient;
             var result = (long)(quotient >> 1);
-            if (((xl ^ yl) & Constants.MIN_VALUE) != 0)
+            if (((xl ^ yl) & Fix64Constants.MIN_VALUE) != 0)
             {
                 result = -result;
             }
@@ -349,7 +348,7 @@ namespace FixedMath.NET
         public static Fix64 operator %(Fix64 x, Fix64 y)
         {
             return new Fix64(
-                x.m_rawValue == Constants.MIN_VALUE & y.m_rawValue == -1 ?
+                x.m_rawValue == Fix64Constants.MIN_VALUE & y.m_rawValue == -1 ?
                 0 :
                 x.m_rawValue % y.m_rawValue);
         }
@@ -365,7 +364,7 @@ namespace FixedMath.NET
 
         public static Fix64 operator -(Fix64 x)
         {
-            return x.m_rawValue == Constants.MIN_VALUE ? MaxValue : new Fix64(-x.m_rawValue);
+            return x.m_rawValue == Fix64Constants.MIN_VALUE ? MaxValue : new Fix64(-x.m_rawValue);
         }
 
         public static bool operator ==(Fix64 x, Fix64 y)
@@ -477,28 +476,28 @@ namespace FixedMath.NET
             // algorithm (C. S. Turner,  "A Fast Binary Logarithm Algorithm", IEEE Signal
             //     Processing Mag., pp. 124,140, Sep. 2010.)
 
-            long b = 1U << (Constants.FRACTIONAL_PLACES - 1);
+            long b = 1U << (Fix64Constants.FRACTIONAL_PLACES - 1);
             long y = 0;
 
             long rawX = x.m_rawValue;
-            while (rawX < Constants.ONE)
+            while (rawX < Fix64Constants.ONE)
             {
                 rawX <<= 1;
-                y -= Constants.ONE;
+                y -= Fix64Constants.ONE;
             }
 
-            while (rawX >= (Constants.ONE << 1))
+            while (rawX >= (Fix64Constants.ONE << 1))
             {
                 rawX >>= 1;
-                y += Constants.ONE;
+                y += Fix64Constants.ONE;
             }
 
             var z = new Fix64(rawX);
 
-            for (int i = 0; i < Constants.FRACTIONAL_PLACES; i++)
+            for (int i = 0; i < Fix64Constants.FRACTIONAL_PLACES; i++)
             {
                 z = FastMul(z, z);
-                if (z.m_rawValue >= (Constants.ONE << 1))
+                if (z.m_rawValue >= (Fix64Constants.ONE << 1))
                 {
                     z = new Fix64(z.m_rawValue >> 1);
                     y += b;
@@ -574,7 +573,7 @@ namespace FixedMath.NET
             var result = 0UL;
 
             // second-to-top bit
-            var bit = 1UL << (Constants.NUM_BITS - 2);
+            var bit = 1UL << (Fix64Constants.NUM_BITS - 2);
 
             while (bit > num)
             {
@@ -603,7 +602,7 @@ namespace FixedMath.NET
                 if (i == 0)
                 {
                     // Then process it again to get the lowest 16 bits.
-                    if (num > (1UL << (Constants.NUM_BITS / 2)) - 1)
+                    if (num > (1UL << (Fix64Constants.NUM_BITS / 2)) - 1)
                     {
                         // The remainder 'num' is too large to be shifted left
                         // by 32, so we have to add 1 to result manually and
@@ -612,16 +611,16 @@ namespace FixedMath.NET
                         //       = num + result^2 - (result + 0.5)^2
                         //       = num - result - 0.5
                         num -= result;
-                        num = (num << (Constants.NUM_BITS / 2)) - 0x80000000UL;
-                        result = (result << (Constants.NUM_BITS / 2)) + 0x80000000UL;
+                        num = (num << (Fix64Constants.NUM_BITS / 2)) - 0x80000000UL;
+                        result = (result << (Fix64Constants.NUM_BITS / 2)) + 0x80000000UL;
                     }
                     else
                     {
-                        num <<= (Constants.NUM_BITS / 2);
-                        result <<= (Constants.NUM_BITS / 2);
+                        num <<= (Fix64Constants.NUM_BITS / 2);
+                        result <<= (Fix64Constants.NUM_BITS / 2);
                     }
 
-                    bit = 1UL << (Constants.NUM_BITS / 2 - 2);
+                    bit = 1UL << (Fix64Constants.NUM_BITS / 2 - 2);
                 }
             }
             // Finally, if next bit would have been 1, round the result upwards.
@@ -670,11 +669,11 @@ namespace FixedMath.NET
             var clampedL = ClampSinValue(x.m_rawValue, out bool flipHorizontal, out bool flipVertical);
 
             // Here we use the fact that the SinLut table has a number of entries
-            // equal to (Constants.PI_OVER_2 >> 15) to use the angle to index directly into it
+            // equal to (Fix64Constants.PI_OVER_2 >> 15) to use the angle to index directly into it
             var rawIndex = (uint)(clampedL >> 15);
-            if (rawIndex >= Constants.LUT_SIZE)
+            if (rawIndex >= Fix64Constants.LUT_SIZE)
             {
-                rawIndex = Constants.LUT_SIZE - 1;
+                rawIndex = Fix64Constants.LUT_SIZE - 1;
             }
             var nearestValue = SinLut[flipHorizontal ?
                 SinLut.Length - 1 - (int)rawIndex :
@@ -687,11 +686,11 @@ namespace FixedMath.NET
         {
             var largePI = 7244019458077122842;
             // Obtained from ((Fix64)1686629713.065252369824872831112M).m_rawValue
-            // This is (2^29)*Constants.PI, where 29 is the largest N such that (2^N)*Constants.PI < MaxValue.
-            // The idea is that this number contains way more precision than Constants.PI_TIMES_2,
-            // and (((x % (2^29*Constants.PI)) % (2^28*Constants.PI)) % ... (2^1*Constants.PI) = x % (2 * Constants.PI)
+            // This is (2^29)*Fix64Constants.PI, where 29 is the largest N such that (2^N)*Fix64Constants.PI < MaxValue.
+            // The idea is that this number contains way more precision than Fix64Constants.PI_TIMES_2,
+            // and (((x % (2^29*Fix64Constants.PI)) % (2^28*Fix64Constants.PI)) % ... (2^1*Fix64Constants.PI) = x % (2 * Fix64Constants.PI)
             // In practice this gives us an error of about 1,25e-9 in the worst case scenario (Sin(MaxValue))
-            // Whereas simply doing x % Constants.PI_TIMES_2 is the 2e-3 range.
+            // Whereas simply doing x % Fix64Constants.PI_TIMES_2 is the 2e-3 range.
 
             var clamped2Pi = angle;
             for (int i = 0; i < 29; ++i)
@@ -700,24 +699,24 @@ namespace FixedMath.NET
             }
             if (angle < 0)
             {
-                clamped2Pi += Constants.PI_TIMES_2;
+                clamped2Pi += Fix64Constants.PI_TIMES_2;
             }
 
             // The LUT contains values for 0 - PiOver2; every other value must be obtained by
             // vertical or horizontal mirroring
-            flipVertical = clamped2Pi >= Constants.PI;
-            // obtain (angle % Constants.PI) from (angle % 2PI) - much faster than doing another modulo
+            flipVertical = clamped2Pi >= Fix64Constants.PI;
+            // obtain (angle % Fix64Constants.PI) from (angle % 2PI) - much faster than doing another modulo
             var clampedPi = clamped2Pi;
-            while (clampedPi >= Constants.PI)
+            while (clampedPi >= Fix64Constants.PI)
             {
-                clampedPi -= Constants.PI;
+                clampedPi -= Fix64Constants.PI;
             }
-            flipHorizontal = clampedPi >= Constants.PI_OVER_2;
-            // obtain (angle % Constants.PI_OVER_2) from (angle % Constants.PI) - much faster than doing another modulo
+            flipHorizontal = clampedPi >= Fix64Constants.PI_OVER_2;
+            // obtain (angle % Fix64Constants.PI_OVER_2) from (angle % Fix64Constants.PI) - much faster than doing another modulo
             var clampedPiOver2 = clampedPi;
-            if (clampedPiOver2 >= Constants.PI_OVER_2)
+            if (clampedPiOver2 >= Fix64Constants.PI_OVER_2)
             {
-                clampedPiOver2 -= Constants.PI_OVER_2;
+                clampedPiOver2 -= Fix64Constants.PI_OVER_2;
             }
             return clampedPiOver2;
         }
@@ -729,7 +728,7 @@ namespace FixedMath.NET
         public static Fix64 Cos(Fix64 x)
         {
             var xl = x.m_rawValue;
-            var rawAngle = xl + (xl > 0 ? -Constants.PI - Constants.PI_OVER_2 : Constants.PI_OVER_2);
+            var rawAngle = xl + (xl > 0 ? -Fix64Constants.PI - Fix64Constants.PI_OVER_2 : Fix64Constants.PI_OVER_2);
             return Sin(new Fix64(rawAngle));
         }
 
@@ -740,7 +739,7 @@ namespace FixedMath.NET
         public static Fix64 FastCos(Fix64 x)
         {
             var xl = x.m_rawValue;
-            var rawAngle = xl + (xl > 0 ? -Constants.PI - Constants.PI_OVER_2 : Constants.PI_OVER_2);
+            var rawAngle = xl + (xl > 0 ? -Fix64Constants.PI - Fix64Constants.PI_OVER_2 : Fix64Constants.PI_OVER_2);
             return FastSin(new Fix64(rawAngle));
         }
 
@@ -752,17 +751,17 @@ namespace FixedMath.NET
         /// </remarks>
         public static Fix64 Tan(Fix64 x)
         {
-            var clampedPi = x.m_rawValue % Constants.PI;
+            var clampedPi = x.m_rawValue % Fix64Constants.PI;
             var flip = false;
             if (clampedPi < 0)
             {
                 clampedPi = -clampedPi;
                 flip = true;
             }
-            if (clampedPi > Constants.PI_OVER_2)
+            if (clampedPi > Fix64Constants.PI_OVER_2)
             {
                 flip = !flip;
-                clampedPi = Constants.PI_OVER_2 - (clampedPi - Constants.PI_OVER_2);
+                clampedPi = Fix64Constants.PI_OVER_2 - (clampedPi - Fix64Constants.PI_OVER_2);
             }
 
             var clamped = new Fix64(clampedPi);
@@ -908,35 +907,35 @@ namespace FixedMath.NET
 
         public static explicit operator Fix64(long value)
         {
-            return new Fix64(value * Constants.ONE);
+            return new Fix64(value * Fix64Constants.ONE);
         }
         public static explicit operator long(Fix64 value)
         {
-            return value.m_rawValue >> Constants.FRACTIONAL_PLACES;
+            return value.m_rawValue >> Fix64Constants.FRACTIONAL_PLACES;
         }
         public static explicit operator Fix64(float value)
         {
-            return new Fix64((long)(value * Constants.ONE));
+            return new Fix64((long)(value * Fix64Constants.ONE));
         }
         public static explicit operator float(Fix64 value)
         {
-            return (float)value.m_rawValue / Constants.ONE;
+            return (float)value.m_rawValue / Fix64Constants.ONE;
         }
         public static explicit operator Fix64(double value)
         {
-            return new Fix64((long)(value * Constants.ONE));
+            return new Fix64((long)(value * Fix64Constants.ONE));
         }
         public static explicit operator double(Fix64 value)
         {
-            return (double)value.m_rawValue / Constants.ONE;
+            return (double)value.m_rawValue / Fix64Constants.ONE;
         }
         public static explicit operator Fix64(decimal value)
         {
-            return new Fix64((long)(value * Constants.ONE));
+            return new Fix64((long)(value * Fix64Constants.ONE));
         }
         public static explicit operator decimal(Fix64 value)
         {
-            return (decimal)value.m_rawValue / Constants.ONE;
+            return (decimal)value.m_rawValue / Fix64Constants.ONE;
         }
 
         public override bool Equals(object obj)
@@ -986,7 +985,7 @@ namespace FixedMath.NET
 
         public Fix64(int value)
         {
-            m_rawValue = value * Constants.ONE;
+            m_rawValue = value * Fix64Constants.ONE;
         }
     }
 }

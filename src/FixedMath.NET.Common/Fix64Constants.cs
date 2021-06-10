@@ -1,6 +1,8 @@
-namespace FixedMath.NET
+using System;
+
+namespace FixedMath
 {
-    public class Constants
+    public struct Fix64Constants
     {
         public const long MAX_VALUE = long.MaxValue;
         public const long MIN_VALUE = long.MinValue;
