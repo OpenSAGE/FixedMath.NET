@@ -2,8 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+
+    <Description>This library implements "Fix64", a 64 bit fixed point 31.32 numeric type and transcendent operations on it (square root, trig, etc).</Description>
     <PackageLicenseExpression>Apache-2.0 AND MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/OpenSAGE/FixedMath.NET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/OpenSAGE/FixedMath.NET.git</RepositoryUrl>
+    <PackageTags>math;fixed-point</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
 
   <ItemGroup>
     <!-- Note that this is not a "normal" ProjectReference.
